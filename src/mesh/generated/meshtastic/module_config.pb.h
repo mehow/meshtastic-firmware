@@ -398,6 +398,22 @@ typedef struct _meshtastic_ModuleConfig_AmbientLightingConfig {
     uint8_t blue;
 } meshtastic_ModuleConfig_AmbientLightingConfig;
 
+typedef PB_BYTES_ARRAY_T(32) meshtastic_ModuleConfig_ServoControlConfig_authorized_key_t;
+/* ServoControlModule Config */
+typedef struct _meshtastic_ModuleConfig_ServoControlConfig {
+    /* Whether the Module is enabled */
+    bool enabled;
+    /* Servo pin number */
+    uint8_t gpio_pin;
+    /* Servo position in the opened state */
+    uint8_t open_position;
+    /* Servo position in the closed state */
+    uint8_t closed_position;
+    /* The public key authorized to control the servo. */
+    pb_size_t authorized_key_count;
+    meshtastic_ModuleConfig_ServoControlConfig_authorized_key_t authorized_key[3];
+} meshtastic_ModuleConfig_ServoControlConfig;
+
 /* A GPIO pin definition for remote hardware module */
 typedef struct _meshtastic_RemoteHardwarePin {
     /* GPIO Pin number (must match Arduino) */
@@ -449,6 +465,8 @@ typedef struct _meshtastic_ModuleConfig {
         meshtastic_ModuleConfig_DetectionSensorConfig detection_sensor;
         /* TODO: REPLACE */
         meshtastic_ModuleConfig_PaxcounterConfig paxcounter;
+        /* TODO: REPLACE */
+        meshtastic_ModuleConfig_ServoControlConfig servo_control;
     } payload_variant;
 } meshtastic_ModuleConfig;
 
@@ -504,6 +522,7 @@ extern "C" {
 #define meshtastic_ModuleConfig_CannedMessageConfig_inputbroker_event_press_ENUMTYPE meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar
 
 
+
 #define meshtastic_RemoteHardwarePin_type_ENUMTYPE meshtastic_RemoteHardwarePinType
 
 
@@ -523,6 +542,7 @@ extern "C" {
 #define meshtastic_ModuleConfig_TelemetryConfig_init_default {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 #define meshtastic_ModuleConfig_CannedMessageConfig_init_default {0, 0, 0, 0, _meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar_MIN, _meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar_MIN, _meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar_MIN, 0, 0, "", 0}
 #define meshtastic_ModuleConfig_AmbientLightingConfig_init_default {0, 0, 0, 0, 0}
+#define meshtastic_ModuleConfig_ServoControlConfig_init_default {0, 0, 0, 0, 0, {{0, {0}}, {0, {0}}, {0, {0}}}}
 #define meshtastic_RemoteHardwarePin_init_default {0, "", _meshtastic_RemoteHardwarePinType_MIN}
 #define meshtastic_ModuleConfig_init_zero        {0, {meshtastic_ModuleConfig_MQTTConfig_init_zero}}
 #define meshtastic_ModuleConfig_MQTTConfig_init_zero {0, "", "", "", 0, 0, 0, "", 0, 0, false, meshtastic_ModuleConfig_MapReportSettings_init_zero}
@@ -539,6 +559,7 @@ extern "C" {
 #define meshtastic_ModuleConfig_TelemetryConfig_init_zero {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 #define meshtastic_ModuleConfig_CannedMessageConfig_init_zero {0, 0, 0, 0, _meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar_MIN, _meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar_MIN, _meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar_MIN, 0, 0, "", 0}
 #define meshtastic_ModuleConfig_AmbientLightingConfig_init_zero {0, 0, 0, 0, 0}
+#define meshtastic_ModuleConfig_ServoControlConfig_init_zero {0, 0, 0, 0, 0, {{0, {0}}, {0, {0}}, {0, {0}}}}
 #define meshtastic_RemoteHardwarePin_init_zero   {0, "", _meshtastic_RemoteHardwarePinType_MIN}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -639,6 +660,11 @@ extern "C" {
 #define meshtastic_ModuleConfig_AmbientLightingConfig_red_tag 3
 #define meshtastic_ModuleConfig_AmbientLightingConfig_green_tag 4
 #define meshtastic_ModuleConfig_AmbientLightingConfig_blue_tag 5
+#define meshtastic_ModuleConfig_ServoControlConfig_enabled_tag 1
+#define meshtastic_ModuleConfig_ServoControlConfig_gpio_pin_tag 2
+#define meshtastic_ModuleConfig_ServoControlConfig_open_position_tag 3
+#define meshtastic_ModuleConfig_ServoControlConfig_closed_position_tag 4
+#define meshtastic_ModuleConfig_ServoControlConfig_authorized_key_tag 5
 #define meshtastic_RemoteHardwarePin_gpio_pin_tag 1
 #define meshtastic_RemoteHardwarePin_name_tag    2
 #define meshtastic_RemoteHardwarePin_type_tag    3
@@ -658,6 +684,7 @@ extern "C" {
 #define meshtastic_ModuleConfig_ambient_lighting_tag 11
 #define meshtastic_ModuleConfig_detection_sensor_tag 12
 #define meshtastic_ModuleConfig_paxcounter_tag   13
+#define meshtastic_ModuleConfig_servo_control_tag 14
 
 /* Struct field encoding specification for nanopb */
 #define meshtastic_ModuleConfig_FIELDLIST(X, a) \
@@ -673,7 +700,8 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,remote_hardware,payload_vari
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,neighbor_info,payload_variant.neighbor_info),  10) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,ambient_lighting,payload_variant.ambient_lighting),  11) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,detection_sensor,payload_variant.detection_sensor),  12) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,paxcounter,payload_variant.paxcounter),  13)
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,paxcounter,payload_variant.paxcounter),  13) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,servo_control,payload_variant.servo_control),  14)
 #define meshtastic_ModuleConfig_CALLBACK NULL
 #define meshtastic_ModuleConfig_DEFAULT NULL
 #define meshtastic_ModuleConfig_payload_variant_mqtt_MSGTYPE meshtastic_ModuleConfig_MQTTConfig
@@ -689,6 +717,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,paxcounter,payload_variant.p
 #define meshtastic_ModuleConfig_payload_variant_ambient_lighting_MSGTYPE meshtastic_ModuleConfig_AmbientLightingConfig
 #define meshtastic_ModuleConfig_payload_variant_detection_sensor_MSGTYPE meshtastic_ModuleConfig_DetectionSensorConfig
 #define meshtastic_ModuleConfig_payload_variant_paxcounter_MSGTYPE meshtastic_ModuleConfig_PaxcounterConfig
+#define meshtastic_ModuleConfig_payload_variant_servo_control_MSGTYPE meshtastic_ModuleConfig_ServoControlConfig
 
 #define meshtastic_ModuleConfig_MQTTConfig_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, BOOL,     enabled,           1) \
@@ -848,6 +877,15 @@ X(a, STATIC,   SINGULAR, UINT32,   blue,              5)
 #define meshtastic_ModuleConfig_AmbientLightingConfig_CALLBACK NULL
 #define meshtastic_ModuleConfig_AmbientLightingConfig_DEFAULT NULL
 
+#define meshtastic_ModuleConfig_ServoControlConfig_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     enabled,           1) \
+X(a, STATIC,   SINGULAR, UINT32,   gpio_pin,          2) \
+X(a, STATIC,   SINGULAR, UINT32,   open_position,     3) \
+X(a, STATIC,   SINGULAR, UINT32,   closed_position,   4) \
+X(a, STATIC,   REPEATED, BYTES,    authorized_key,    5)
+#define meshtastic_ModuleConfig_ServoControlConfig_CALLBACK NULL
+#define meshtastic_ModuleConfig_ServoControlConfig_DEFAULT NULL
+
 #define meshtastic_RemoteHardwarePin_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   gpio_pin,          1) \
 X(a, STATIC,   SINGULAR, STRING,   name,              2) \
@@ -870,6 +908,7 @@ extern const pb_msgdesc_t meshtastic_ModuleConfig_RangeTestConfig_msg;
 extern const pb_msgdesc_t meshtastic_ModuleConfig_TelemetryConfig_msg;
 extern const pb_msgdesc_t meshtastic_ModuleConfig_CannedMessageConfig_msg;
 extern const pb_msgdesc_t meshtastic_ModuleConfig_AmbientLightingConfig_msg;
+extern const pb_msgdesc_t meshtastic_ModuleConfig_ServoControlConfig_msg;
 extern const pb_msgdesc_t meshtastic_RemoteHardwarePin_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
@@ -888,6 +927,7 @@ extern const pb_msgdesc_t meshtastic_RemoteHardwarePin_msg;
 #define meshtastic_ModuleConfig_TelemetryConfig_fields &meshtastic_ModuleConfig_TelemetryConfig_msg
 #define meshtastic_ModuleConfig_CannedMessageConfig_fields &meshtastic_ModuleConfig_CannedMessageConfig_msg
 #define meshtastic_ModuleConfig_AmbientLightingConfig_fields &meshtastic_ModuleConfig_AmbientLightingConfig_msg
+#define meshtastic_ModuleConfig_ServoControlConfig_fields &meshtastic_ModuleConfig_ServoControlConfig_msg
 #define meshtastic_RemoteHardwarePin_fields &meshtastic_RemoteHardwarePin_msg
 
 /* Maximum encoded size of messages (where known) */
@@ -904,6 +944,7 @@ extern const pb_msgdesc_t meshtastic_RemoteHardwarePin_msg;
 #define meshtastic_ModuleConfig_RangeTestConfig_size 10
 #define meshtastic_ModuleConfig_RemoteHardwareConfig_size 96
 #define meshtastic_ModuleConfig_SerialConfig_size 28
+#define meshtastic_ModuleConfig_ServoControlConfig_size 113
 #define meshtastic_ModuleConfig_StoreForwardConfig_size 24
 #define meshtastic_ModuleConfig_TelemetryConfig_size 46
 #define meshtastic_ModuleConfig_size             227
