@@ -877,6 +877,12 @@ void NodeDB::installDefaultModuleConfig()
     moduleConfig.ambient_lighting.green = (myNodeInfo.my_node_num & 0x00FF00) >> 8;
     moduleConfig.ambient_lighting.blue = myNodeInfo.my_node_num & 0x0000FF;
 
+    moduleConfig.has_servo_control = true;
+    moduleConfig.servo_control.enabled = false;
+    moduleConfig.servo_control.gpio_pin = 0; // Default to no pin
+    moduleConfig.servo_control.open_position = 0;
+    moduleConfig.servo_control.closed_position = 180;
+
     initModuleConfigIntervals();
 }
 
