@@ -408,6 +408,11 @@ size_t PhoneAPI::getFromRadio(uint8_t *buf)
             fromRadioScratch.moduleConfig.which_payload_variant = meshtastic_ModuleConfig_paxcounter_tag;
             fromRadioScratch.moduleConfig.payload_variant.paxcounter = moduleConfig.paxcounter;
             break;
+        case meshtastic_ModuleConfig_servo_control_tag:
+            LOG_DEBUG("Send module config: servo control");
+            fromRadioScratch.moduleConfig.which_payload_variant = meshtastic_ModuleConfig_servo_control_tag;
+            fromRadioScratch.moduleConfig.payload_variant.servo_control = moduleConfig.servo_control;
+            break;
         default:
             LOG_ERROR("Unknown module config type %d", config_state);
         }
