@@ -51,8 +51,6 @@ bool NotificationRenderer::pauseBanner = false;
 notificationTypeEnum NotificationRenderer::current_notification_type = notificationTypeEnum::none;
 uint32_t NotificationRenderer::numDigits = 0;
 uint32_t NotificationRenderer::currentNumber = 0;
-VirtualKeyboard *NotificationRenderer::virtualKeyboard = nullptr;
-std::function<void(const std::string &)> NotificationRenderer::textInputCallback = nullptr;
 
 uint32_t pow_of_10(uint32_t n)
 {
@@ -104,32 +102,13 @@ void NotificationRenderer::resetBanner()
 
 void NotificationRenderer::drawBannercallback(OLEDDisplay *display, OLEDDisplayUiState *state)
 {
-    // Handle text_input notifications first - they have their own timeout/banner logic
-    if (current_notification_type == notificationTypeEnum::text_input) {
-        // Check for timeout and reset if needed for text input
-        if (millis() > alertBannerUntil && alertBannerUntil > 0) {
-            resetBanner();
-            return;
-        }
-        drawTextInput(display, state);
-        return;
-    }
-
-    if (millis() > alertBannerUntil && alertBannerUntil > 0) {
+    if (!isOverlayBannerShowing() && alertBannerMessage[0] != '\0')
         resetBanner();
-    }
-
-    // Exit if no banner is showing or banner is paused
-    if (!isOverlayBannerShowing() || pauseBanner) {
+    if (!isOverlayBannerShowing() || pauseBanner)
         return;
-    }
-
     switch (current_notification_type) {
     case notificationTypeEnum::none:
         // Do nothing - no notification to display
-        break;
-    case notificationTypeEnum::text_input:
-        // Already handled above with dedicated logic (early return). Keep a case here to satisfy -Wswitch.
         break;
     case notificationTypeEnum::text_banner:
     case notificationTypeEnum::selection_picker:
