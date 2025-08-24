@@ -7,7 +7,9 @@ ServoControlModule::ServoControlModule()
     : SinglePortModule("servo", meshtastic_PortNum_TEXT_MESSAGE_APP)
 {
     servo.attach(moduleConfig.servo_control.gpio_pin);
-    moveServoTo(90); // Default position
+    LOG_INFO("Servo attached (pin %d)", moduleConfig.servo_control.gpio_pin);
+
+    moveServoTo(moduleConfig.servo_control.open_position); // Default position
 }
 
 bool ServoControlModule::isTrustedNode(const meshtastic_MeshPacket_public_key_t public_key)
