@@ -1,4 +1,5 @@
 #include "ServoControlModule.h"
+#include "MeshService.h"
 #include "configuration.h"
 #include "main.h"
 #include <string.h>
@@ -29,6 +30,11 @@ void ServoControlModule::moveServoTo(int angle)
     servo.write(angle);
 }
 
+int ServoControlModule::getServoPosition()
+{
+    return servo.read();
+}
+
 ProcessMessage ServoControlModule::handleReceived(const meshtastic_MeshPacket &mp)
 {
     if (!moduleConfig.servo_control.enabled) return ProcessMessage::CONTINUE;
@@ -39,13 +45,37 @@ ProcessMessage ServoControlModule::handleReceived(const meshtastic_MeshPacket &m
 
     if (strncmp((const char *)payload.bytes, "OPEN", payload.size) == 0) {
         moveServoTo(moduleConfig.servo_control.open_position);
-        LOG_INFO("Servo moved to OPEN (%d degrees)", moduleConfig.servo_control.open_position);
+        LOG_INFO("Servo moved to OPEN position (%d degrees)", moduleConfig.servo_control.open_position);
         return ProcessMessage::STOP;
     } else if (strncmp((const char *)payload.bytes, "CLOSE", payload.size) == 0) {
         moveServoTo(moduleConfig.servo_control.closed_position);
-        LOG_INFO("Servo moved to CLOSE (%d degrees)", moduleConfig.servo_control.closed_position);
+        LOG_INFO("Servo moved to CLOSED position (%d degrees)", moduleConfig.servo_control.closed_position);
+        return ProcessMessage::STOP;
+    } else if (strncmp((const char *)payload.bytes, "STATUS", payload.size) == 0) {
+        LOG_INFO("Servo STATUS requested");
+        auto reply = allocReply();
+        if (reply) {
+            reply->to = mp.from;
+            service->sendToMesh(reply);
+        }
         return ProcessMessage::STOP;
     }
 
     return ProcessMessage::CONTINUE;
+}
+
+meshtastic_MeshPacket* ServoControlModule::allocReply() {
+    int angle = getServoPosition();
+    const char *replyStr = NULL;
+    if (angle == moduleConfig.servo_control.open_position) {
+        replyStr = "OPEN";
+    } else if (angle == moduleConfig.servo_control.closed_position) {
+        replyStr = "CLOSED";
+    } else {
+        replyStr = "UNKNOWN";
+    }
+    auto reply = allocDataPacket();
+    reply->decoded.payload.size = strlen(replyStr);
+    memcpy(reply->decoded.payload.bytes, replyStr, reply->decoded.payload.size);
+    return reply;
 }

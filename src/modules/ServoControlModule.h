@@ -12,9 +12,11 @@ public:
 
 protected:
     virtual ProcessMessage handleReceived(const meshtastic_MeshPacket &mp) override;
+    virtual meshtastic_MeshPacket *allocReply() override;
 
 private:
     Servo servo;
     void moveServoTo(int angle);
+    int getServoPosition();
     bool isTrustedNode(const meshtastic_MeshPacket_public_key_t public_key);
 };
