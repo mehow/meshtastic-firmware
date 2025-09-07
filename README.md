@@ -1,6 +1,5 @@
 <div align="center">
 
-<img src=".github/meshtastic_servo.png" alt="Meshtastic + Servo Logo" width="80"/>
 <h1>Meshtastic Firmware<br>with servo support</h1>
 
 </div>
