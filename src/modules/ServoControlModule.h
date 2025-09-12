@@ -1,6 +1,10 @@
 #pragma once
 #include "SinglePortModule.h"
+#ifdef ARCH_ESP32
+#include <ESP32Servo.h>
+#else
 #include <Servo.h>
+#endif
 
 /**
  * Module to control a servo based on received commands from trusted nodes.
