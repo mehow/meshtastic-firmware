@@ -174,7 +174,7 @@ External serial flash W25Q16JV_IQ
 /**
     OLED Screen Model
     */
-#define ARDUINO_ARCH_AVR
+// #define ARDUINO_ARCH_AVR
 #define USE_SH1107_128_64
 
 #ifdef __cplusplus
